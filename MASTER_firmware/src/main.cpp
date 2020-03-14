@@ -56,9 +56,10 @@ void setup()
 
 void loop()
 {
-  myFSM.doState();
+send_byte_BT(ENTER_MEASURING_MODE_MESSAGE);
 
-  testBT();
+  
+  myFSM.doState();
 
   //shift_reg_snapshot();
   //buttons_shift.data = transfer_shift_reg_data();
