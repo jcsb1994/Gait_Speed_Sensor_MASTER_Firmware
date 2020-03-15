@@ -26,11 +26,9 @@ public:
   bool flag;
 };
 
-extern VL53L1X sensor;
-extern TOF mySensor;
 
-extern VL53L1X sensor2;
-extern TOF finalSensor;
+extern VL53L1X masterSensor;
+extern TOF myMasterSensor;
 
 void tof_setup();
 

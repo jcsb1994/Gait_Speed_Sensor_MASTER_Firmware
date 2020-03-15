@@ -63,12 +63,13 @@ void print_wait_for_rfid_page()
 
 void print_rfid_detected_page()
 {
+    Serial.println("page");
     lcd.clear();
     //myMenu.printCursor();
     lcd.setCursor(CURSOR_SIZE + 2, 0);
     lcd.print("Patient near");
     lcd.setCursor(CURSOR_SIZE, 1);
-    (gait_assessment.hasBegun() && (!mySensor.flag != !finalSensor.flag)) ? (lcd.print("Reading..")) : (lcd.print("         "));
+    (gait_assessment.hasBegun()/* && (!myMasterSensor.flag != !finalSensor.flag)*/) ? (lcd.print("Reading..")) : (lcd.print("         "));
     if (gait_assessment.getSpeed())
     {
         lcd.setCursor(CURSOR_SIZE, 2);

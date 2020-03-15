@@ -66,12 +66,14 @@ void print_rfid_detected_page();
 ####################################################################################################*/
 enum events
 {
+    // Menu tact events
     select = 1,
     increment,
     decrement = 3,
-    
-    RFID_detected,
     back,
+    TOF_blocked,
+    TOF_time_received,  //BT event
+    RFID_detected,
     speed_measured, //maybe?
     RFID_left
 };

@@ -136,52 +136,50 @@ void WAIT_FOR_RFID_stateHandler()
 
 void TOF_stateHandler()
 {
-    mySensor.debounce();    // Read TOF sensor
-    finalSensor.debounce(); // Read 2nd
+    myMasterSensor.debounce(); // Read TOF sensor
 
-    // If starting time isnt defined and 1 of the sensors are blocked
-    if (!gait_assessment.hasBegun() && (mySensor.getStatus() || finalSensor.getStatus()))
+    //if status is blocked, we measure time
+    if (myMasterSensor.getStatus())
     {
-        (mySensor.getStatus()) ? (mySensor.flag++) : (finalSensor.flag++);
-        gait_assessment.setStartTime();
-        myFSM.setEvent(events::speed_measured);
+        if (!myMasterSensor.flag)
+        {
+            myMasterSensor.flag++;
+            myFSM.setEvent(events::TOF_blocked);
+            Serial.println("blocked!");
+        }
     }
-
-    // If start time was recorded, and reading the opposite
-    else if (gait_assessment.hasBegun() && ((mySensor.getStatus() && finalSensor.flag) || (finalSensor.getStatus() && mySensor.flag)))
-    {
-        gait_assessment.computeSpeed();
-        myFSM.setEvent(speed_measured);
-        mySensor.flag++;
-        finalSensor.flag++;
-    }
-
-    else if (mySensor.flag && finalSensor.flag && !mySensor.getStatus() && !finalSensor.getStatus())
-    {
-        mySensor.flag = 0;
-        finalSensor.flag = 0;
-        gait_assessment.reset();
-    }
+    else if (!myMasterSensor.getStatus() && myMasterSensor.flag && !gait_assessment.hasBegun()) // Unflag only when
+        myMasterSensor.flag = 0;
 
     switch (myFSM.getEvent())
     {
     case events::back:
         print_init_page();
-        mySensor.flag = 0;
-        finalSensor.flag = 0;
+        myMasterSensor.flag = 0;
         gait_assessment.reset();
         myFSM.setState(INIT_stateHandler);
         break;
 
     case events::select:
-        finalSensor.flag = 0;
-        mySensor.flag = 0;
+        myMasterSensor.flag = 0;
         gait_assessment.reset();
         myMenu.refreshPage();
         //Serial.println("reseted!");
         break;
 
     case events::speed_measured:
+        myMenu.refreshPage();
+        break;
+
+    case events::TOF_time_received: // When time is received, save time (either start or finish)
+        Serial.println("received");
+        if (!gait_assessment.BT_flag)
+            gait_assessment.BT_flag++;
+    case events::TOF_blocked:
+        if (gait_assessment.hasBegun())
+            gait_assessment.computeSpeed(), gait_assessment.BT_flag = 0;
+        else
+            gait_assessment.setStartTime();
         myMenu.refreshPage();
         break;
 

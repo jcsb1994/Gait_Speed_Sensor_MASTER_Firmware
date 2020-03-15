@@ -6,8 +6,6 @@
 #define PATH_UBSTRUCTED 1
 #define PATH_CLEAR 0
 
-
-
 // TOF class to give proper measurement methods to each VL53L1X
 
 void TOF::debounce()
@@ -48,42 +46,35 @@ void TOF::debounce()
   (integrator) ? (maybeFlag++) : (maybeFlag = 0, lastReading = currentReading);
 }
 
-
-
-
-
-
 void TOF::init()
 {
+  linked_sensor->init();
   linked_sensor->setTimeout(500);
-  //linked_sensor->init();
   linked_sensor->setDistanceMode(VL53L1X::Long);
   linked_sensor->setMeasurementTimingBudget(50000);
   linked_sensor->startContinuous(50);
 }
 
-VL53L1X sensor;
-TOF mySensor(sensor);
-
-VL53L1X sensor2;
-TOF finalSensor(sensor2);
+VL53L1X masterSensor;
+TOF myMasterSensor(masterSensor);
 
 #define sensorShutPin 2
 
-void tof_setup() {
+void tof_setup()
+{
 
-  Serial.begin(9600);
+  //Serial.begin(9600);
   Wire.begin();
-  Wire.beginTransmission(0x29);
-  pinMode(sensorShutPin, OUTPUT);
-
+  //Wire.beginTransmission(0x29);
+  //pinMode(sensorShutPin, OUTPUT);
   Wire.setClock(400000); // use 400 kHz I2C
 
-  digitalWrite(sensorShutPin, HIGH);
+  myMasterSensor.init();
+  //digitalWrite(sensorShutPin, HIGH);
 
+  /*
   sensor.init(); //resets address back to default
   sensor2.init();
-
 
   digitalWrite(sensorShutPin, LOW); //shuts down sensor1, talk to sensor2
   delay(1);
@@ -94,5 +85,5 @@ void tof_setup() {
 
    mySensor.init();  
   finalSensor.init();
-
+*/
 }

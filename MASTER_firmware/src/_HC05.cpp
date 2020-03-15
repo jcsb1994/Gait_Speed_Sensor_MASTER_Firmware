@@ -26,8 +26,9 @@ void read_BT_events()
     //BTserial.write(y);
     switch (receivedByte)
     {
-    case START_TIME_MEASURED_MESSAGE:
+    case TIME_MEASURED_MESSAGE:
       //record time NOW
+      myFSM.setEvent(events::TOF_time_received);
       break;
 
     case RFID_RECOGNIZED_MESSAGE:

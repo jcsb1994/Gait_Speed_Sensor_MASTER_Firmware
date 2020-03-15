@@ -10,6 +10,7 @@ unsigned long gaitSpeedAssess::computeSpeed()
         mLastSpeed = chrono;
         Serial.println();
         Serial.println(chrono);
+        mStartTime = 0;
         return chrono;
     }
     else
