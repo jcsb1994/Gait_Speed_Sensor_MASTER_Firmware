@@ -51,6 +51,16 @@ public:
         else
             return 0;
     }
+
+    bool isDone() {
+        if(mCalculatedFlag)
+        {
+             Serial.println("Done");
+            return 1;
+        }
+        else return 0;
+    }
+
     unsigned long computeSpeed();
 
     unsigned long getSpeed()
@@ -62,6 +72,8 @@ public:
     {
         //No start time, hasbegun will return false
         mStartTime = 0;
+        // BT flag 0, received packets will start a new reading
+        BT_flag = 0;
         //final flag reset, computespeed will work again
         mCalculatedFlag = 0;
     }

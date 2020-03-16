@@ -1,6 +1,6 @@
 #include "_tof.h"
 
-#define THRESHOLD 300
+#define THRESHOLD 400
 #define UBSTRUCTED_MAXIMUM 3
 #define CLEAR_MAXIMUM -3
 #define PATH_UBSTRUCTED 1
@@ -11,6 +11,7 @@
 void TOF::debounce()
 {
   currentReading = linked_sensor->read(); //get the newest reading
+  //Serial.println(currentReading);
 
   if (lastReading - currentReading > THRESHOLD) //if last was bigger, someone might be in front
   {

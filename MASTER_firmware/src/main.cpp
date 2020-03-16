@@ -32,6 +32,7 @@ void setup()
 
   lcd_setup();
   tof_setup();
+  gait_assessment.reset();
   myFSM.init();
 }
 

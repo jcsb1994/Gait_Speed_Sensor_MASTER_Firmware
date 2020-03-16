@@ -148,8 +148,17 @@ void TOF_stateHandler()
             Serial.println("blocked!");
         }
     }
-    else if (!myMasterSensor.getStatus() && myMasterSensor.flag && !gait_assessment.hasBegun()) // Unflag only when
+
+    if (gait_assessment.isDone() && !myMasterSensor.getStatus())
+    {
+        gait_assessment.reset();
         myMasterSensor.flag = 0;
+        myMenu.refreshPage();
+    }
+    /*  else if (!myMasterSensor.getStatus() && myMasterSensor.flag && !gait_assessment.hasBegun()) // Unflag only when
+        myMasterSensor.flag = 0;
+        gait_assessment.reset();
+        Serial.println("Reset"); */
 
     switch (myFSM.getEvent())
     {
@@ -173,14 +182,38 @@ void TOF_stateHandler()
 
     case events::TOF_time_received: // When time is received, save time (either start or finish)
         Serial.println("received");
+        myMenu.refreshPage();
         if (!gait_assessment.BT_flag)
+        {
             gait_assessment.BT_flag++;
+            if (gait_assessment.hasBegun())
+            {
+                gait_assessment.computeSpeed();
+            }
+
+            else
+                gait_assessment.setStartTime(),
+                    Serial.println("time set, bt received");
+
+            Serial.println(gait_assessment.hasBegun());
+            myMenu.refreshPage();
+        }
+
+        break;
+
     case events::TOF_blocked:
         if (gait_assessment.hasBegun())
-            gait_assessment.computeSpeed(), gait_assessment.BT_flag = 0;
+        {
+            gait_assessment.computeSpeed();
+        }
+
         else
+        {
+            Serial.println("time set, blocked");
             gait_assessment.setStartTime();
+        }
         myMenu.refreshPage();
+
         break;
 
     default:
