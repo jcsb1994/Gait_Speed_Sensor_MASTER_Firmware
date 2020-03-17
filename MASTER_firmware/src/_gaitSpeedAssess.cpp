@@ -1,7 +1,7 @@
 
 #include "_gaitSpeedAssess.h"
 
-unsigned long gaitSpeedAssess::computeSpeed()
+void gaitSpeedAssess::computeSpeed()
 {
     if (!mCalculatedFlag)
     {
@@ -10,14 +10,12 @@ unsigned long gaitSpeedAssess::computeSpeed()
         mLastSpeed = chrono;
         //Serial.println();
         
-         Serial.println(gait_assessment.hasBegun());
+         //Serial.println(gait_assessment.hasBegun());
         mStartTime = 0;
-        Serial.println(gait_assessment.hasBegun());
-        Serial.println("calculated");
-        return chrono;
+        //Serial.println(gait_assessment.hasBegun());
+        //Serial.println("calculated");
     }
-    else
-        return 0;
+
 }
 
 gaitSpeedAssess gait_assessment;

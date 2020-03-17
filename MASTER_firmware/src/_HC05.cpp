@@ -17,7 +17,6 @@ void testBT()
   }
 }
 
-
 void read_BT_events()
 {
   if (BTserial.available())
@@ -29,6 +28,11 @@ void read_BT_events()
     case TIME_MEASURED_MESSAGE:
       //record time NOW
       myFSM.setEvent(events::TOF_time_received);
+      break;
+
+    case CALIB_SUCCESSFUL_MESSAGE:
+      gait_assessment.BTcalibFlag++;
+      //Serial.println("bt flag");
       break;
 
     case RFID_RECOGNIZED_MESSAGE:
@@ -44,8 +48,6 @@ void read_BT_events()
     }
   }
 }
-
-
 
 void send_byte_BT(unsigned char message)
 {

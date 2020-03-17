@@ -38,7 +38,8 @@ void INIT_stateHandler()
 
         case INIT_START_POS:
             print_wait_for_rfid_page();
-            myFSM.setState(WAIT_FOR_RFID_stateHandler);
+            myMenu.setCurrentPage(print_tof_calib_page);
+            myFSM.setState(TOF_CALIB_stateHandler);
             break;
 
         default:
@@ -110,12 +111,44 @@ void SETUP_stateHandler()
     }
 }
 
+void TOF_CALIB_stateHandler()
+{
+    if (!myMasterSensor.isCalibrationDone)
+    {
+        print_tof_calib_page();
+        send_byte_BT(ENTER_CALIB_MESSAGE);
+        delay(2000);
+        myMasterSensor.calibrate();
+        myMasterSensor.isCalibrationDone++;
+    }
+    else
+    {
+        myMenu.refreshPage();
+        delay(1000);
+        if (myMasterSensor.isCalibrated() && gait_assessment.BTcalibFlag) // Success if both devices calibrated properly
+        {
+            print_wait_for_rfid_page();
+            myFSM.setState(WAIT_FOR_RFID_stateHandler); // start measuring after calibration
+        }
+        else // calib has failed
+        {
+            print_init_page();
+            myFSM.setState(INIT_stateHandler);
+            send_byte_BT(STOP_MEASURING_MESSAGE); // slave starts measuring even if fails, so stop it if unsuccessful
+        }
+        myMasterSensor.isCalibrationDone = 0;
+        gait_assessment.BTcalibFlag = 0;
+        //Serial.println("bt calib reset");
+    }
+}
+
 void WAIT_FOR_RFID_stateHandler()
 {
     switch (myFSM.getEvent())
     {
     case events::back:
         print_init_page();
+        send_byte_BT(STOP_MEASURING_MESSAGE);
         myFSM.setState(INIT_stateHandler);
         break;
 
@@ -138,27 +171,21 @@ void TOF_stateHandler()
 {
     myMasterSensor.debounce(); // Read TOF sensor
 
-    //if status is blocked, we measure time
-    if (myMasterSensor.getStatus())
+    if (myMasterSensor.getStatus()) // If status is blocked, we measure time
     {
         if (!myMasterSensor.flag)
         {
             myMasterSensor.flag++;
             myFSM.setEvent(events::TOF_blocked);
-            Serial.println("blocked!");
         }
     }
 
-    if (gait_assessment.isDone() && !myMasterSensor.getStatus())
+    if (gait_assessment.isDone() && !myMasterSensor.getStatus()) // If speed calculated and this sensor isnt blocked anymore, reset
     {
         gait_assessment.reset();
         myMasterSensor.flag = 0;
         myMenu.refreshPage();
     }
-    /*  else if (!myMasterSensor.getStatus() && myMasterSensor.flag && !gait_assessment.hasBegun()) // Unflag only when
-        myMasterSensor.flag = 0;
-        gait_assessment.reset();
-        Serial.println("Reset"); */
 
     switch (myFSM.getEvent())
     {
@@ -166,6 +193,7 @@ void TOF_stateHandler()
         print_init_page();
         myMasterSensor.flag = 0;
         gait_assessment.reset();
+        send_byte_BT(STOP_MEASURING_MESSAGE);
         myFSM.setState(INIT_stateHandler);
         break;
 
@@ -181,37 +209,15 @@ void TOF_stateHandler()
         break;
 
     case events::TOF_time_received: // When time is received, save time (either start or finish)
-        Serial.println("received");
-        myMenu.refreshPage();
+
         if (!gait_assessment.BT_flag)
-        {
             gait_assessment.BT_flag++;
-            if (gait_assessment.hasBegun())
-            {
-                gait_assessment.computeSpeed();
-            }
-
-            else
-                gait_assessment.setStartTime(),
-                    Serial.println("time set, bt received");
-
-            Serial.println(gait_assessment.hasBegun());
-            myMenu.refreshPage();
-        }
-
+        myFSM.setEvent(events::TOF_blocked);
         break;
 
     case events::TOF_blocked:
-        if (gait_assessment.hasBegun())
-        {
-            gait_assessment.computeSpeed();
-        }
 
-        else
-        {
-            Serial.println("time set, blocked");
-            gait_assessment.setStartTime();
-        }
+        (gait_assessment.hasBegun()) ? (gait_assessment.computeSpeed()) : (gait_assessment.setStartTime());
         myMenu.refreshPage();
 
         break;
