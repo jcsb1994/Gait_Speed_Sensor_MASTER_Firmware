@@ -51,6 +51,30 @@ void print_setup_page()
     lcd.print("BT pairing");
 };
 
+void print_tof_calib_page()
+{
+    lcd.clear();
+    //myMenu.printCursor();
+    lcd.setCursor(4, 0);
+    lcd.print("calibrating..");
+    lcd.setCursor(0, 1);
+    lcd.print("Step aside of lasers");
+
+    if (myMasterSensor.isCalibrationDone)
+    {
+        if (myMasterSensor.isCalibrated()  && gait_assessment.BTcalibFlag)
+        {
+            lcd.clear();
+            lcd.print("Success!");
+        }
+        else
+        {
+            lcd.clear();
+            lcd.print("Failed");
+        }
+    }
+}
+
 void print_wait_for_rfid_page()
 {
     lcd.clear();
@@ -63,13 +87,13 @@ void print_wait_for_rfid_page()
 
 void print_rfid_detected_page()
 {
-    Serial.println("page");
+    //Serial.println("page");
     lcd.clear();
     //myMenu.printCursor();
     lcd.setCursor(CURSOR_SIZE + 2, 0);
     lcd.print("Patient near");
     lcd.setCursor(CURSOR_SIZE, 1);
-    (gait_assessment.hasBegun()/* && (!myMasterSensor.flag != !finalSensor.flag)*/) ? (lcd.print("Reading..")) : (lcd.print("         "));
+    (gait_assessment.hasBegun() /* && (!myMasterSensor.flag != !finalSensor.flag)*/) ? (lcd.print("Reading..")) : (lcd.print("         "));
     if (gait_assessment.getSpeed())
     {
         lcd.setCursor(CURSOR_SIZE, 2);

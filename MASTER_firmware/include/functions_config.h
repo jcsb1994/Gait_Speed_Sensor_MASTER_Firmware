@@ -57,6 +57,8 @@ void print_init_page();
 #define SETUP_BT_PAIR_POS 2
 void print_setup_page();
 
+void print_tof_calib_page();
+
 void print_wait_for_rfid_page();
 
 void print_rfid_detected_page();
@@ -73,6 +75,7 @@ enum events
     back,
     TOF_blocked,
     TOF_time_received,  //BT event
+    calib_success_received,
     RFID_detected,
     speed_measured, //maybe?
     RFID_left
@@ -87,6 +90,8 @@ void INIT_stateHandler();
 void SETUP_stateHandler();
 
 void BT_PAIR_stateHandler();
+
+void TOF_CALIB_stateHandler();
 
 void WAIT_FOR_RFID_stateHandler();
 

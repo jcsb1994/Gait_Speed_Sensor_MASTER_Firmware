@@ -7,25 +7,42 @@
 class TOF
 {
 private:
+  VL53L1X *linked_sensor;
+  // Debounce variables
   int currentReading;
   int lastReading;
   bool maybeFlag;
   int integrator;
   bool tof_status;
-  VL53L1X *linked_sensor;
+
+  // Calibration variables
+  
+  bool calibrationFlag;
+  int minimumClearValue;
+  
 
 public:
-  TOF(VL53L1X &sensor_to_link):
-    linked_sensor(&sensor_to_link)
-  {}
-  void debounce();
-  void init();
-  bool getStatus() {
+  TOF(VL53L1X &sensor_to_link) : linked_sensor(&sensor_to_link)   //ctor
+  {
+  }
+  void init();    // Initialize the TOF sensor
+
+  void calibrate(); // calibrates with current wall distance before entering measurement mode
+  bool isCalibrationDone;
+
+  bool isCalibrated() {
+    return calibrationFlag;
+  }
+
+  void debounce();  // debounces readings to determine if blocked or clear
+
+  bool getStatus()  // returns 1 for blocked or 0 for clear
+  {
     return tof_status;
   }
-  bool flag;
-};
 
+  bool flag;  // Marks when it has been read in current speed assessment
+};
 
 extern VL53L1X masterSensor;
 extern TOF myMasterSensor;

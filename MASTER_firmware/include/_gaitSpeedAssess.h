@@ -21,6 +21,7 @@ private:
 public:
     int exactDistance = 500; // Takes values from 3 to 5 meters: 300 to 500 in cm
     bool BT_flag;   //flags reception of BT sensor reading (only without RFID IDs since only 1 reading at a time)
+    bool BTcalibFlag;
 
     gaitSpeedAssess() {} //ctor
     uint8_t getTestType()
@@ -54,14 +55,13 @@ public:
 
     bool isDone() {
         if(mCalculatedFlag)
-        {
-             Serial.println("Done");
+        {  
             return 1;
         }
         else return 0;
     }
 
-    unsigned long computeSpeed();
+    void computeSpeed();
 
     unsigned long getSpeed()
     {
