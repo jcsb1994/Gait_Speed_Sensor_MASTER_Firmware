@@ -8,7 +8,7 @@
 
 // TOF class to give proper measurement methods to each VL53L1X
 
-#define CALIB_READINGS 10
+#define CALIB_READINGS 20
 #define MAX_CALIB_ATTEMPTS 5
 void TOF::calibrate()
 {
@@ -34,6 +34,9 @@ void TOF::calibrate()
         max = curr;
       delay(100);
     }
+      Serial.println(minimumClearValue);
+        Serial.println();
+        delay(700);
 
   } while ((max - minimumClearValue) > 800 && nAttempts < MAX_CALIB_ATTEMPTS); // Do again if more than 800 difference between calib readings
   // Serial.println("calib done");

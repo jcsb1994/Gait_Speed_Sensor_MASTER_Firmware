@@ -1,6 +1,6 @@
 #include "_HC05.h"
 
-SoftwareSerial BTserial(9, 10);
+SoftwareSerial BTserial(2, 3);
 
 void testBT()
 {

@@ -124,7 +124,7 @@ void TOF_CALIB_stateHandler()
     else
     {
         myMenu.refreshPage();
-        delay(1000);
+        delay(800);
         if (myMasterSensor.isCalibrated() && gait_assessment.BTcalibFlag) // Success if both devices calibrated properly
         {
             print_wait_for_rfid_page();
@@ -144,6 +144,10 @@ void TOF_CALIB_stateHandler()
 
 void WAIT_FOR_RFID_stateHandler()
 {
+
+    //isPatientNear();    // if a patient is near, move to tof state
+    myRFID.scanUIDs();
+
     switch (myFSM.getEvent())
     {
     case events::back:
@@ -169,6 +173,9 @@ void WAIT_FOR_RFID_stateHandler()
 
 void TOF_stateHandler()
 {
+    //isPatientNear();    // if a patient is near, stay in this state. else, return to wait for rfid
+    myRFID.scanUIDs();
+
     myMasterSensor.debounce(); // Read TOF sensor
 
     if (myMasterSensor.getStatus()) // If status is blocked, we measure time
@@ -214,6 +221,13 @@ void TOF_stateHandler()
             gait_assessment.BT_flag++;
         myFSM.setEvent(events::TOF_blocked);
         break;
+
+    case events::RFID_left:
+    myFSM.setState(WAIT_FOR_RFID_stateHandler);
+    myMenu.setCurrentPage(print_wait_for_rfid_page);
+    print_wait_for_rfid_page();
+    Serial.println("left");
+    break;
 
     case events::TOF_blocked:
 

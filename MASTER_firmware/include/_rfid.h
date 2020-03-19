@@ -19,36 +19,43 @@
 #define SS_PIN 10
 #define RST_PIN 9
 
-MFRC522 mfrc522(SS_PIN, RST_PIN); // Create MFRC522 instance.
-uint8_t activeID[4];
+//#define RFID_MAX 3
 
-void setup()
+class Patient_RFID
 {
-    SPI.begin();        // Initiate  SPI bus
-    mfrc522.PCD_Init(); // Initiate MFRC522
-}
+private:
+    MFRC522 *linked_RFID;
+    unsigned char activeID[4];
+    unsigned long last_RFID_read;
+    unsigned char currUID;
+    //unsigned char integrator;
+    bool patient_UID_flag;
+    unsigned char UID_integrator;
 
-void isPatientNear()
-{
-    if (mfrc522.PICC_IsNewCardPresent() && mfrc522.PICC_ReadCardSerial()) // If card is read, read the active
+public:
+    Patient_RFID(MFRC522 &rfid_to_link) : linked_RFID(&rfid_to_link) {}
+    void scanUIDs();
+    void setup()
     {
-        for (uint8_t i = 0; i < 4; i++)
-        {
-            activeID[i] = mfrc522.uid.uidByte[i];
-        }
+        SPI.begin(); // Initiate  SPI bus
+        linked_RFID->PCD_Init();
     }
-}
+    void setUID() {
+        currUID = activeID[0];
+    }
+    unsigned char getUID() {
+        return currUID;
+    }
+};
 
+extern MFRC522 mfrc522; // Create MFRC522 instance.
+extern Patient_RFID myRFID;
+/*
+void RFID_setup();
+
+void isPatientNear();
 // receive an hex value and store it as activeID
 
-void sendActiveID() //needs to send a flag that mentions we are talking about the RFID #, then the data.
-{
-    for (uint8_t i = 0; i < 4; i++)
-    {
-        Serial.print(activeID[1]);
-    }
-}
-
-// Check for available data and 
-
+void sendActiveID();
+*/
 #endif

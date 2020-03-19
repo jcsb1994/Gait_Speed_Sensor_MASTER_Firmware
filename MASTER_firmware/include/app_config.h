@@ -1,7 +1,6 @@
 #ifndef APP_CONFIG_H
 #define APP_CONFIG_H
 
-
 /*##################################################################
 * USED PINS ON THE ATMEGA328P
 ##################################################################*/
@@ -11,15 +10,15 @@
 //#define LedPin3 10
 
 //74HC165 input shift register
-#define LOAD_CONNECTION 11
+#define LOAD_CONNECTION 4
 #define LOAD_PIN_PORT_DATA_DIRECTION_REG DDRD
 #define LOAD_PIN_PORT_STATE_REG PORTD
+#define INPUT_SHIFT_NPN 6 // Acts as a SPI chip select, shuts HC165 down to talk to RFID module
 
 /********** ST7789 OLED SPI pins ***********/
 #define TFT_CS 10 // define chip select pin
 #define TFT_DC 9  // define data/command pin
 #define TFT_RST 8 // define reset pin, or set to -1 and connect to Arduino RESET pin
-
 
 /*##################################################################
 * BASIC APP CONFIG
@@ -32,8 +31,8 @@
 #define BUTTON_ACTIVE_STATE_CONFIG 1 // 1 for active HIGH buttons or 0 for active low
 
 #define SHORT_BUTTON_PRESS_CONFIG 0        // 1 to turn ON functionality for short button presses
-#define BUTTON_RELEASE_CONFIG 1             // 1 to turn ON functionality for button releases
-#define LONG_BUTTON_PRESS_CONFIG 1       // 1 to turn ON functionality for long button presses
+#define BUTTON_RELEASE_CONFIG 1            // 1 to turn ON functionality for button releases
+#define LONG_BUTTON_PRESS_CONFIG 1         // 1 to turn ON functionality for long button presses
 #define RELEASE_AFTER_LONG_EFFECT_CONFIG 0 // 1 will trigger a release effect even after long press effects occured
 #define SIMULTANEOUS_BUTTON_PRESSES_CONFIG 1
 
@@ -50,8 +49,6 @@
 // Debounce algorithm macros (do not debounce if using sleep)
 #define DEBOUNCE_TIME 0.3
 #define SAMPLE_FREQUENCY 6
-
-
 
 /***************************************************************************
  * Sleep

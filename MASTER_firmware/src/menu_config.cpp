@@ -87,7 +87,7 @@ void print_wait_for_rfid_page()
 
 void print_rfid_detected_page()
 {
-    //Serial.println("page");
+    Serial.println("tof page");
     lcd.clear();
     //myMenu.printCursor();
     lcd.setCursor(CURSOR_SIZE + 2, 0);
@@ -98,6 +98,7 @@ void print_rfid_detected_page()
     {
         lcd.setCursor(CURSOR_SIZE, 2);
         lcd.print("ID: ");
+        lcd.print(myRFID.getUID());
         lcd.setCursor(CURSOR_SIZE, 3);
         lcd.print("measured: ");
         lcd.print(gait_assessment.getSpeed());
