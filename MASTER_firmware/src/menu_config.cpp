@@ -87,7 +87,7 @@ void print_wait_for_rfid_page()
 
 void print_rfid_detected_page()
 {
-    Serial.println("tof page");
+    //Serial.println("tof page");
     lcd.clear();
     //myMenu.printCursor();
     lcd.setCursor(CURSOR_SIZE + 2, 0);

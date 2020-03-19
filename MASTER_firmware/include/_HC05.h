@@ -11,6 +11,7 @@ extern SoftwareSerial BTserial; // SRX | STX
 #define ENTER_CALIB_MESSAGE 'e'
 #define TEST_RESULT_MILLISEC_MESSAGE 'd'
 #define STOP_MEASURING_MESSAGE 'g'
+#define ENTER_CONTINUOUS_MESSAGE 'h'
 
 // Msgs received from slave
 #define CALIB_SUCCESSFUL_MESSAGE 'f'

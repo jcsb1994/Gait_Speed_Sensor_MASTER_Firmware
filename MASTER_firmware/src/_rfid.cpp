@@ -9,32 +9,42 @@ void Patient_RFID::scanUIDs()
 {
     if (millis() - last_RFID_read > 200)
     {
-        if (linked_RFID->PICC_IsNewCardPresent() || linked_RFID->PICC_ReadCardSerial()) // If card is read, read the active
+        last_RFID_read = millis();
+        if (linked_RFID->PICC_IsNewCardPresent() && linked_RFID->PICC_ReadCardSerial()) // If card is read, read the active
         {
-
-            //UID_integrator = 0; // Reset count before being sur he left
+            //Serial.print("act: ");
+            UID_integrator = 0; // Reset count before being sure they left
             for (int i = 0; i < 4; i++)
             {
                 activeID[i] = linked_RFID->uid.uidByte[i];
-                Serial.print(activeID[i]);
+                //Serial.print(activeID[i]);
             }
-            Serial.println();
-            if (!patient_UID_flag)
-            {
-                patient_UID_flag++;
-                myFSM.setEvent(events::RFID_detected);
-            }
+            //Serial.println();
+
+            //patient_UID_flag++;
+            setUID();
+            myFSM.setEvent(events::RFID_detected);
         }
 
         else
         {
-            //UID_integrator++;
-            //if (UID_integrator >= LEFT_MAX)
-            //{
-            patient_UID_flag = 0;
-            memset(activeID, 0, sizeof(activeID));
-            myFSM.setEvent(events::RFID_left);
-            //}
+            //Serial.println("fu");
+            UID_integrator++;
+            if (UID_integrator >= LEFT_MAX)
+            {
+                //patient_UID_flag = 0;
+                memset(activeID, 0, sizeof(activeID));
+                myFSM.setEvent(events::RFID_left);
+                /*
+                Serial.print("act: ");
+                for (int i = 0; i < 4; i++)
+                {
+                    Serial.print(activeID[i]);
+                }
+                Serial.println();
+                */
+                setUID();
+            }
         }
     }
 }

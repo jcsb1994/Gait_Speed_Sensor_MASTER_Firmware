@@ -146,7 +146,8 @@ void WAIT_FOR_RFID_stateHandler()
 {
 
     //isPatientNear();    // if a patient is near, move to tof state
-    myRFID.scanUIDs();
+
+        myRFID.scanUIDs();
 
     switch (myFSM.getEvent())
     {
@@ -162,8 +163,10 @@ void WAIT_FOR_RFID_stateHandler()
         myFSM.setState(TOF_stateHandler);
         break;
 
-    case events::select: // Pressing select gets you into continuous reading
-        myFSM.setEvent(events::RFID_detected);
+    case events::select:
+        gait_assessment.continuous++; // Pressing select gets you into continuous reading
+        myFSM.setEvent(events::RFID_detected);  // Will bring to TOF state
+        send_byte_BT(ENTER_CONTINUOUS_MESSAGE);
         break;
 
     default:
@@ -174,7 +177,8 @@ void WAIT_FOR_RFID_stateHandler()
 void TOF_stateHandler()
 {
     //isPatientNear();    // if a patient is near, stay in this state. else, return to wait for rfid
-    myRFID.scanUIDs();
+    if (!gait_assessment.continuous)
+        myRFID.scanUIDs();
 
     myMasterSensor.debounce(); // Read TOF sensor
 
@@ -197,6 +201,7 @@ void TOF_stateHandler()
     switch (myFSM.getEvent())
     {
     case events::back:
+        gait_assessment.continuous = 0;
         print_init_page();
         myMasterSensor.flag = 0;
         gait_assessment.reset();
@@ -205,7 +210,7 @@ void TOF_stateHandler()
         break;
 
     case events::select:
-        myMasterSensor.flag = 0;
+        myMasterSensor.flag = 0; // Flag that marks this side of the walking test is done
         gait_assessment.reset();
         myMenu.refreshPage();
         //Serial.println("reseted!");
@@ -223,11 +228,11 @@ void TOF_stateHandler()
         break;
 
     case events::RFID_left:
-    myFSM.setState(WAIT_FOR_RFID_stateHandler);
-    myMenu.setCurrentPage(print_wait_for_rfid_page);
-    print_wait_for_rfid_page();
-    Serial.println("left");
-    break;
+        myFSM.setState(WAIT_FOR_RFID_stateHandler);
+        myMenu.setCurrentPage(print_wait_for_rfid_page);
+        print_wait_for_rfid_page();
+        //Serial.println("left");
+        break;
 
     case events::TOF_blocked:
 

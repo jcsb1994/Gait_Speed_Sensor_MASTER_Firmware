@@ -14,7 +14,7 @@
  */
 
 #include <SPI.h>
-#include <MFRC522.h>
+
 
 #define SS_PIN 10
 #define RST_PIN 9
@@ -29,7 +29,7 @@ private:
     unsigned long last_RFID_read;
     unsigned char currUID;
     //unsigned char integrator;
-    bool patient_UID_flag;
+    //bool patient_UID_flag;
     unsigned char UID_integrator;
 
 public:
